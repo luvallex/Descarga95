@@ -1,0 +1,144 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cálculo de Combustible</title>
+  <link rel="manifest" href="manifest.json">
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').then(() => {
+        console.log('Service Worker registrado');
+      });
+    }
+  </script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      padding: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background-color: #4CAF50;
+      color: white;
+    }
+    input {
+      width: 100px;
+      padding: 5px;
+      text-align: center;
+    }
+    .alerta {
+      font-weight: bold;
+    }
+    .alcanzar {
+      color: green;
+    }
+    .esperar {
+      color: orange;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Cálculo de Combustible</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Producto</th>
+        <th>Capacidad 100%</th>
+        <th>95%</th>
+        <th>Volumen Actual (L)</th>
+        <th>Volumen Actual (GL)</th>
+        <th>Pedido</th>
+        <th>Espacio Seguro</th>
+        <th>Descarga</th>
+        <th>Alerta</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Regular</td>
+        <td>3000</td>
+        <td>2850</td>
+        <td><input type="number" id="litrosRegular" value="6540"></td>
+        <td id="galonesRegular">0</td>
+        <td><input type="number" id="pedidoRegular" value="1000"></td>
+        <td id="espacioSeguroRegular">0</td>
+        <td id="descargaRegular">0</td>
+        <td id="alertaRegular" class="alerta">-</td>
+      </tr>
+      <tr>
+        <td>Super</td>
+        <td>4000</td>
+        <td>3800</td>
+        <td><input type="number" id="litrosSuper" value="3953"></td>
+        <td id="galonesSuper">0</td>
+        <td><input type="number" id="pedidoSuper" value="2500"></td>
+        <td id="espacioSeguroSuper">0</td>
+        <td id="descargaSuper">0</td>
+        <td id="alertaSuper" class="alerta">-</td>
+      </tr>
+      <tr>
+        <td>Diesel</td>
+        <td>7000</td>
+        <td>6650</td>
+        <td><input type="number" id="litrosDiesel" value="9375"></td>
+        <td id="galonesDiesel">0</td>
+        <td><input type="number" id="pedidoDiesel" value="4500"></td>
+        <td id="espacioSeguroDiesel">0</td>
+        <td id="descargaDiesel">0</td>
+        <td id="alertaDiesel" class="alerta">-</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <button onclick="calcular()">Calcular</button>
+
+  <script>
+    function calcular() {
+      calcularFila('Regular', 2850);
+      calcularFila('Super', 3800);
+      calcularFila('Diesel', 6650);
+    }
+
+    function calcularFila(producto, capacidad95) {
+      const litros = parseFloat(document.getElementById(`litros${producto}`).value) || 0;
+      const pedido = parseFloat(document.getElementById(`pedido${producto}`).value) || 0;
+      const galones = litros / 3.785;
+      const espacioSeguro = capacidad95 - galones;
+      const descarga = espacioSeguro - pedido;
+      const alerta = descarga >= 0 ? 'ALCANZA' : 'ESPERAR';
+      document.getElementById(`galones${producto}`).textContent = galones.toFixed(2);
+      document.getElementById(`espacioSeguro${producto}`).textContent = espacioSeguro.toFixed(2);
+      document.getElementById(`descarga${producto}`).textContent = descarga.toFixed(2);
+      const alertaElemento = document.getElementById(`alerta${producto}`);
+      alertaElemento.textContent = alerta;
+      alertaElemento.className = `alerta ${alerta.toLowerCase()}`;
+    }
+  </script>
+
+</body>
+</html>
